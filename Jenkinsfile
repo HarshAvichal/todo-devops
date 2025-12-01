@@ -77,12 +77,6 @@ pipeline {
     post {
         success {
             echo '✅ Pipeline completed successfully!'
-            // Uncomment to enable email notifications (requires SMTP configuration)
-            // emailext (
-            //     subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            //     body: "The build completed successfully!",
-            //     to: "${NOTIFICATION_EMAIL}"
-            // )
         }
         
         failure {
