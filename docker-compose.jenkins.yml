@@ -32,7 +32,7 @@ services:
     # Environment variables
     environment:
       # Java options for Jenkins
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      # - JAVA_OPTS=-Djenkins.install.runSetupWizard=false  # Commented out to enable setup wizard
       
       # Jenkins options
       - JENKINS_OPTS=--httpPort=8080

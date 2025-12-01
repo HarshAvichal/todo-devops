@@ -2,16 +2,22 @@ pipeline {
     // 'agent any' means this pipeline can run on any available Jenkins agent/node
     agent any
     
+    // Tools to use in this pipeline
+    // This tells Jenkins which Node.js version to use (configured in Global Tool Configuration)
+    tools {
+        nodejs 'NodeJS-24'  // Must match the name you configure in Jenkins Tools
+    }
+    
     // Environment variables that will be available throughout the pipeline
     environment {
         // Node version to use (you can adjust this)
-        NODE_VERSION = '20'
+        NODE_VERSION = '24'
         
         // Directory where build artifacts will be stored
         BUILD_DIR = 'dist'
         
         // Email for notifications (change this to your email)
-        NOTIFICATION_EMAIL = 'your-email@example.com'
+        NOTIFICATION_EMAIL = 'harshavichal08@gmail.com'
     }
     
     // Define the stages of your CI/CD pipeline
