@@ -117,11 +117,9 @@ pipeline {
         }
         
         // ==========================================
-        // STAGE 7: DEPLOY TO VERCEL (Preview) - COMMENTED OUT
+        // STAGE 7: DEPLOY TO VERCEL (Preview)
         // ==========================================
         // Deploy to Vercel preview environment for testing
-        // Uncomment when you configure Vercel credentials in Jenkins
-        /*
         stage('Deploy to Vercel Preview') {
             when {
                 // Deploy preview for non-main branches (develop, feature branches, etc.)
@@ -142,14 +140,11 @@ pipeline {
                 }
             }
         }
-        */
         
         // ==========================================
-        // STAGE 8: DEPLOY TO VERCEL PRODUCTION - COMMENTED OUT
+        // STAGE 8: DEPLOY TO VERCEL PRODUCTION
         // ==========================================
         // Deploy to Vercel production environment
-        // Uncomment when you configure Vercel credentials in Jenkins
-        /*
         stage('Deploy to Vercel Production') {
             when {
                 // Only deploy to production from 'main' branch
@@ -168,7 +163,6 @@ pipeline {
                 }
             }
         }
-        */
     }
     
     // ==========================================
