@@ -27,6 +27,7 @@ const PomodoroTimer = ({
   const [sessionCount, setSessionCount] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [sessionGoal, setSessionGoal] = useState(4);
   const [completedToday, setCompletedToday] = useState(0);
   
@@ -138,6 +139,7 @@ const PomodoroTimer = ({
     setIsMuted(!isMuted);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const requestNotificationPermission = async () => {
     if (Notification.permission === 'default') {
       await Notification.requestPermission();

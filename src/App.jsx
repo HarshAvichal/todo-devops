@@ -60,6 +60,7 @@ function App() {
   const [showFocusMode, setShowFocusMode] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [currentFocusTodo, setCurrentFocusTodo] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [pomodoroData, setPomodoroData] = useState({
     timeLeft: 25 * 60,
     isRunning: false,
