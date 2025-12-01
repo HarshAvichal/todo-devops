@@ -5,7 +5,7 @@ pipeline {
     // Tools to use in this pipeline
     // This tells Jenkins which Node.js version to use (configured in Global Tool Configuration)
     tools {
-        nodejs 'NodeJS-24'  // Must match the name you configure in Jenkins Tools
+        nodejs 'NodeJS'  // Must match the name you configure in Jenkins Tools
     }
     
     // Environment variables that will be available throughout the pipeline
