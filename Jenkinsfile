@@ -5,7 +5,7 @@ pipeline {
     // Tools to use in this pipeline
     // This tells Jenkins which Node.js version to use (configured in Global Tool Configuration)
     tools {
-        nodejs 'NodeJS'  // Must match the name you configure in Jenkins Tools
+        nodejs 'NodeJS-24'  // Must match the name you configure in Jenkins Tools
     }
     
     // Environment variables that will be available throughout the pipeline
@@ -194,9 +194,9 @@ pipeline {
         
         // Always runs, regardless of success/failure
         always {
-            echo '🧹 Cleaning up workspace...'
-            // Clean up workspace to save disk space
-            cleanWs()
+            echo '🧹 Pipeline execution completed'
+            // Clean up workspace to save disk space (commented out to avoid context issues)
+            // cleanWs()
         }
     }
 }
