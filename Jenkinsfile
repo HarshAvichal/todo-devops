@@ -117,39 +117,12 @@ pipeline {
         }
         
         // ==========================================
-        // STAGE 7: DEPLOY TO VERCEL (Preview)
-        // ==========================================
-        // Deploy to Vercel preview environment for testing
-        stage('Deploy to Vercel Preview') {
-            when {
-                // Deploy preview for non-main branches (develop, feature branches, etc.)
-                not {
-                    branch 'main'
-                }
-            }
-            steps {
-                echo '🚀 Deploying to Vercel Preview environment...'
-                script {
-                    // Deploy to Vercel preview (non-production)
-                    // This creates a unique preview URL for testing
-                    withCredentials([string(credentialsId: 'vercel-token', variable: 'VERCEL_TOKEN')]) {
-                        sh '''
-                            npx vercel --token=${VERCEL_TOKEN} --yes
-                        '''
-                    }
-                }
-            }
-        }
-        
-        // ==========================================
-        // STAGE 8: DEPLOY TO VERCEL PRODUCTION
+        // STAGE 7: DEPLOY TO VERCEL PRODUCTION
         // ==========================================
         // Deploy to Vercel production environment
+        // Note: For regular Pipeline jobs, we deploy on every build
+        // For branch-specific deployment, use Multibranch Pipeline instead
         stage('Deploy to Vercel Production') {
-            when {
-                // Only deploy to production from 'main' branch
-                branch 'main'
-            }
             steps {
                 echo '🚀 Deploying to Vercel Production...'
                 script {
