@@ -87,11 +87,6 @@ pipeline {
         
         failure {
             echo '❌ Pipeline failed!'
-            // emailext (
-            //     subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            //     body: "The build failed. Check Jenkins for details.",
-            //     to: "${NOTIFICATION_EMAIL}"
-            // )
         }
         
         always {
