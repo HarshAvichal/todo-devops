@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Operational Dashboard | Todo App CI/CD</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --jenkins-color: #D24939;
+            --github-color: #238636;
+            --bg-dark: #0d1117;
+            --bg-card: #161b22;
+            --bg-card-hover: #1c2128;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-yellow: #d29922;
+            --accent-red: #f85149;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #1a1f35 0%, #0d1117 100%);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .header .project-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .header .project-info span {
+            background: var(--bg-card);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Status Overview */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .status-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-blue);
+        }
+
+        .status-card.jenkins {
+            border-top: 3px solid var(--jenkins-color);
+        }
+
+        .status-card.github {
+            border-top: 3px solid var(--github-color);
+        }
+
+        .status-card .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-card .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .status-card.jenkins .icon {
+            background: rgba(210, 73, 57, 0.2);
+        }
+
+        .status-card.github .icon {
+            background: rgba(35, 134, 54, 0.2);
+        }
+
+        .status-card h3 {
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-badge.active {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+        }
+
+        .status-badge.configured {
+            background: rgba(210, 73, 57, 0.2);
+            color: var(--jenkins-color);
+        }
+
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 0.75rem;
+            background: var(--bg-dark);
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Comparison Section */
+        .section-title {
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .comparison-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-card h4 {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bar-chart {
+            margin-bottom: 1rem;
+        }
+
+        .bar-item {
+            margin-bottom: 1rem;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .bar-track {
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            gap: 2px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .bar-fill.jenkins {
+            background: linear-gradient(90deg, var(--jenkins-color), #e85d4c);
+        }
+
+        .bar-fill.github {
+            background: linear-gradient(90deg, var(--github-color), #4ae168);
+        }
+
+        /* Pipeline Visualization */
+        .pipeline-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .pipeline-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .pipeline-header h4 {
+            font-size: 1.1rem;
+        }
+
+        .pipeline-flow {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+        }
+
+        .pipeline-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+        }
+
+        .stage-box {
+            background: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-size: 0.8rem;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .stage-box:hover {
+            border-color: var(--accent-blue);
+            transform: scale(1.05);
+        }
+
+        .stage-box.success {
+            border-color: var(--accent-green);
+        }
+
+        .stage-box .stage-icon {
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .pipeline-arrow {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        /* Feature Comparison Table */
+        .feature-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .feature-table th,
+        .feature-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .feature-table th {
+            background: var(--bg-dark);
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-table th:nth-child(2) {
+            color: var(--jenkins-color);
+        }
+
+        .feature-table th:nth-child(3) {
+            color: var(--github-color);
+        }
+
+        .feature-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .feature-table tr:hover td {
+            background: var(--bg-card-hover);
+        }
+
+        .feature-table td:first-child {
+            font-weight: 500;
+        }
+
+        .check {
+            color: var(--accent-green);
+        }
+
+        .cross {
+            color: var(--accent-red);
+        }
+
+        /* Build History */
+        .build-history {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .build-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            background: var(--bg-dark);
+        }
+
+        .build-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .build-status.success {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green);
+        }
+
+        .build-status.failed {
+            background: var(--accent-red);
+            box-shadow: 0 0 8px var(--accent-red);
+        }
+
+        .build-info {
+            flex: 1;
+        }
+
+        .build-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .build-meta {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .build-duration {
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-card .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .summary-card .label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .footer .team {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .metrics-row {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pipeline-flow {
+                flex-direction: column;
+            }
+
+            .pipeline-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🚀 DevOps Operational Dashboard</h1>
+            <p>CI/CD Pipeline Comparison & Monitoring</p>
+            <div class="project-info">
+                <span>📦 Project: Todo App</span>
+                <span>🛠️ Stack: React + Vite</span>
+                <span>☁️ Deploy: Vercel</span>
+                <span>📅 December 2024</span>
+            </div>
+        </header>
+
+        <!-- Summary Stats -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="value">2</div>
+                <div class="label">CI/CD Pipelines</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">13</div>
+                <div class="label">Total Stages/Steps</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">26s</div>
+                <div class="label">Fastest Build</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">100%</div>
+                <div class="label">Success Rate</div>
+            </div>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="status-grid">
+            <div class="status-card jenkins">
+                <div class="card-header">
+                    <div class="icon">🔧</div>
+                    <div>
+                        <h3>Jenkins Pipeline</h3>
+                        <span class="status-badge configured">⚙️ Configured</span>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Self-hosted CI/CD with Vercel deployment
+                </p>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <div class="metric-value">7</div>
+                        <div class="metric-label">Stages</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">~45s</div>
+                        <div class="metric-label">Build Time</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">Vercel</div>
+                        <div class="metric-label">Deploy To</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-card github">
+                <div class="card-header">
+                    <div class="icon">🐙</div>
+                    <div>
+                        <h3>GitHub Actions</h3>
+                        <span class="status-badge active">✅ Active</span>
+                    </div>
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+                    Cloud CI/CD with artifact storage
+                </p>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <div class="metric-value">6</div>
+                        <div class="metric-label">Steps</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">26s</div>
+                        <div class="metric-label">Build Time</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value">2</div>
+                        <div class="metric-label">Runs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pipeline Visualizations -->
+        <h2 class="section-title">📊 Pipeline Stages</h2>
+        
+        <div class="pipeline-section">
+            <div class="pipeline-header">
+                <span style="color: var(--jenkins-color); font-size: 1.5rem;">🔧</span>
+                <h4>Jenkins Pipeline (7 Stages)</h4>
+            </div>
+            <div class="pipeline-flow">
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">📥</div>
+                        <div>Checkout</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">📦</div>
+                        <div>Install</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">🔍</div>
+                        <div>Lint</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">🏗️</div>
+                        <div>Build</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">✅</div>
+                        <div>Test</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">💾</div>
+                        <div>Archive</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">🚀</div>
+                        <div>Deploy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pipeline-section">
+            <div class="pipeline-header">
+                <span style="color: var(--github-color); font-size: 1.5rem;">🐙</span>
+                <h4>GitHub Actions Pipeline (6 Steps)</h4>
+            </div>
+            <div class="pipeline-flow">
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">📥</div>
+                        <div>Checkout</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">⚙️</div>
+                        <div>Setup Node</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">📦</div>
+                        <div>Install</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">🔍</div>
+                        <div>ESLint</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">🏗️</div>
+                        <div>Build</div>
+                    </div>
+                </div>
+                <span class="pipeline-arrow">→</span>
+                <div class="pipeline-stage">
+                    <div class="stage-box success">
+                        <div class="stage-icon">📤</div>
+                        <div>Upload</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Charts -->
+        <h2 class="section-title">📈 Performance Comparison</h2>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card">
+                <h4>Build Performance</h4>
+                <div class="bar-chart">
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>Build Time</span>
+                            <span>Jenkins: ~45s | GitHub: ~26s</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill jenkins" style="width: 45%;"></div>
+                            <div class="bar-fill github" style="width: 26%;"></div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>Setup Complexity</span>
+                            <span>Jenkins: High | GitHub: Low</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill jenkins" style="width: 80%;"></div>
+                            <div class="bar-fill github" style="width: 25%;"></div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>Maintenance Effort</span>
+                            <span>Jenkins: High | GitHub: None</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill jenkins" style="width: 75%;"></div>
+                            <div class="bar-fill github" style="width: 10%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-card">
+                <h4>Flexibility & Features</h4>
+                <div class="bar-chart">
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>Customization</span>
+                            <span>Jenkins: 95% | GitHub: 70%</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill jenkins" style="width: 95%;"></div>
+                            <div class="bar-fill github" style="width: 70%;"></div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>Plugin Ecosystem</span>
+                            <span>Jenkins: 1800+ | GitHub: 15000+</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill jenkins" style="width: 60%;"></div>
+                            <div class="bar-fill github" style="width: 90%;"></div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>Ease of Use</span>
+                            <span>Jenkins: 40% | GitHub: 90%</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill jenkins" style="width: 40%;"></div>
+                            <div class="bar-fill github" style="width: 90%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Comparison Table -->
+        <h2 class="section-title">🔍 Detailed Feature Comparison</h2>
+        
+        <table class="feature-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>🔧 Jenkins</th>
+                    <th>🐙 GitHub Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Hosting Model</td>
+                    <td>Self-hosted (Docker)</td>
+                    <td>Cloud (GitHub-managed)</td>
+                </tr>
+                <tr>
+                    <td>Configuration</td>
+                    <td>Jenkinsfile (Groovy)</td>
+                    <td>YAML workflow file</td>
+                </tr>
+                <tr>
+                    <td>Pipeline Stages</td>
+                    <td>7 stages</td>
+                    <td>6 steps</td>
+                </tr>
+                <tr>
+                    <td>Build Time</td>
+                    <td>~45 seconds</td>
+                    <td>~26 seconds</td>
+                </tr>
+                <tr>
+                    <td>Deployment</td>
+                    <td><span class="check">✓</span> Vercel Production</td>
+                    <td><span class="cross">✗</span> Artifact Only</td>
+                </tr>
+                <tr>
+                    <td>Auto-trigger on Push</td>
+                    <td>Webhook required</td>
+                    <td><span class="check">✓</span> Native</td>
+                </tr>
+                <tr>
+                    <td>Artifact Storage</td>
+                    <td>Jenkins Server</td>
+                    <td>GitHub Storage</td>
+                </tr>
+                <tr>
+                    <td>Lint Behavior</td>
+                    <td>Fails on error</td>
+                    <td>Continue on error</td>
+                </tr>
+                <tr>
+                    <td>Node.js Version</td>
+                    <td>24 (via NodeJS tool)</td>
+                    <td>20 (via setup-node)</td>
+                </tr>
+                <tr>
+                    <td>Cost</td>
+                    <td>Server/hosting costs</td>
+                    <td>Free (public repos)</td>
+                </tr>
+                <tr>
+                    <td>Learning Curve</td>
+                    <td>Steep</td>
+                    <td>Gentle</td>
+                </tr>
+                <tr>
+                    <td>Enterprise Adoption</td>
+                    <td><span class="check">✓</span> Very High</td>
+                    <td><span class="check">✓</span> Growing</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Build History -->
+        <h2 class="section-title">📜 Recent GitHub Actions Runs</h2>
+        
+        <div class="build-history">
+            <div class="build-item">
+                <div class="build-status success"></div>
+                <div class="build-info">
+                    <div class="build-name">Update README to match actual project</div>
+                    <div class="build-meta">main • Triggered by push • HarshAvichal</div>
+                </div>
+                <div class="build-duration">26s</div>
+            </div>
+            <div class="build-item">
+                <div class="build-status success"></div>
+                <div class="build-info">
+                    <div class="build-name">Simplify pipeline workflow documentation</div>
+                    <div class="build-meta">main • Triggered by push • HarshAvichal</div>
+                </div>
+                <div class="build-duration">26s</div>
+            </div>
+            <div class="build-item">
+                <div class="build-status success"></div>
+                <div class="build-info">
+                    <div class="build-name">Add Jenkins SWOT Analysis</div>
+                    <div class="build-meta">main • Triggered by push • HarshAvichal</div>
+                </div>
+                <div class="build-duration">26s</div>
+            </div>
+            <div class="build-item">
+                <div class="build-status success"></div>
+                <div class="build-info">
+                    <div class="build-name">Remove unnecessary documentation files</div>
+                    <div class="build-meta">main • Triggered by push • HarshAvichal</div>
+                </div>
+                <div class="build-duration">26s</div>
+            </div>
+            <div class="build-item">
+                <div class="build-status success"></div>
+                <div class="build-info">
+                    <div class="build-name">Add GitHub Actions CI pipeline and DevOps documentation</div>
+                    <div class="build-meta">main • Triggered by push • satyajeetmane01</div>
+                </div>
+                <div class="build-duration">26s</div>
+            </div>
+        </div>
+
+        <!-- Key Insights -->
+        <h2 class="section-title">💡 Key Insights</h2>
+        
+        <div class="comparison-grid">
+            <div class="comparison-card">
+                <h4>When to Use Jenkins</h4>
+                <ul style="color: var(--text-secondary); padding-left: 1.2rem;">
+                    <li>Enterprise environments requiring full control</li>
+                    <li>Complex, multi-stage pipelines</li>
+                    <li>On-premise deployment requirements</li>
+                    <li>Integration with legacy systems</li>
+                    <li>Air-gapped or secure environments</li>
+                </ul>
+            </div>
+            <div class="comparison-card">
+                <h4>When to Use GitHub Actions</h4>
+                <ul style="color: var(--text-secondary); padding-left: 1.2rem;">
+                    <li>Quick setup for new projects</li>
+                    <li>Open-source projects (free tier)</li>
+                    <li>Teams already using GitHub</li>
+                    <li>Simple to moderate CI/CD needs</li>
+                    <li>Minimal maintenance overhead</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="team">
+                <strong>Team:</strong> HarshAvichal & satyajeetmane01
+            </div>
+            <div>
+                DevSecOps Comparison Project | December 2024
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.85rem;">
+                📊 Dashboard reflects operational aspects of CI/CD implementation
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
+
