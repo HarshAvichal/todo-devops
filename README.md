@@ -14,103 +14,100 @@ A modern, feature-rich todo application built with React and Vite, featuring Pom
 - 📊 **Analytics** - Track your productivity
 - 💾 **Local Storage** - Your data persists automatically
 
+---
+
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - Node.js 18+ installed
-- npm or yarn package manager
+- npm package manager
 
 ### Installation
 
-1. Clone the repository:
 ```bash
-git clone <your-repo-url>
-cd todo
-```
+# Clone the repository
+git clone https://github.com/HarshAvichal/todo-devops.git
+cd todo-devops
 
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-```
 
-3. Start the development server:
-```bash
+# Start development server
 npm run dev
 ```
 
-4. Open http://localhost:5173 in your browser
+Open http://localhost:5173 in your browser.
+
+---
 
 ## 📜 Available Scripts
 
-```bash
-npm run dev      # Start development server
-npm run build    # Build for production
-npm run lint     # Run ESLint
-npm run preview  # Preview production build
-```
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run lint` | Run ESLint |
+| `npm run preview` | Preview production build |
+
+---
 
 ## 🏗️ Tech Stack
 
-- **React 19** - UI framework
-- **Vite** - Build tool and dev server
-- **date-fns** - Date manipulation
-- **lucide-react** - Icon library
-- **ESLint** - Code quality
+| Technology | Purpose |
+|------------|---------|
+| React 19 | UI Framework |
+| Vite | Build Tool |
+| ESLint | Code Quality |
+| date-fns | Date Manipulation |
+| lucide-react | Icons |
 
-## 🤖 CI/CD with Jenkins → Vercel Deployment
+---
 
-This project includes a complete Jenkins pipeline setup for automated deployment to Vercel!
+## 🤖 CI/CD Pipelines
 
-### ⚡ Quick Deploy to Vercel (5 Minutes)
+This project implements **two CI/CD pipelines** for comparison:
 
-```bash
-# Option 1: Automatic with Jenkins
-./setup-jenkins.sh
-# Then follow VERCEL_QUICK_SETUP.md
+### Pipeline 1: Jenkins
 
-# Option 2: Manual deployment
-npm run deploy
-```
+Self-hosted CI/CD with Vercel deployment.
 
-### 📚 Documentation
+**Stages:**
+1. Checkout - Pull code from GitHub
+2. Install Dependencies - `npm ci`
+3. Lint Code - `npm run lint`
+4. Build Application - `npm run build`
+5. Test Build - Verify dist/ exists
+6. Archive Artifacts - Save build files
+7. Deploy to Vercel - Production deployment
 
-- ⚡ **[VERCEL_QUICK_SETUP.md](./VERCEL_QUICK_SETUP.md)** - Deploy in 5 minutes!
-- 📖 **[VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md)** - Complete Vercel guide
-- 📖 **[JENKINS_QUICKSTART.md](./JENKINS_QUICKSTART.md)** - Get Jenkins running
-- 📚 **[JENKINS_GUIDE.md](./JENKINS_GUIDE.md)** - Comprehensive Jenkins guide
-- ⚙️ **[Jenkinsfile](./Jenkinsfile)** - Pipeline configuration
+### Pipeline 2: GitHub Actions
 
-### 🚀 What the Pipeline Does
+Cloud-based CI/CD with artifact upload.
 
-1. ✅ Checks out code from Git
-2. ✅ Installs npm dependencies
-3. ✅ Runs ESLint for code quality
-4. ✅ Builds the production app
-5. ✅ Archives build artifacts
-6. ✅ **Deploys to Vercel Preview** (develop branch)
-7. ✅ **Deploys to Vercel Production** (main branch)
+**Steps:**
+1. Checkout - Clone repository
+2. Setup Node.js - Node 20 with caching
+3. Install Dependencies - `npm ci`
+4. Run ESLint - Code quality check
+5. Build Vite App - `npm run build`
+6. Upload Artifact - Save dist/ folder
 
-### 🌐 Deployment Flow
+### Trigger Comparison
 
-```
-Push to 'develop' → Jenkins → Vercel Preview (testing)
-Push to 'main'    → Jenkins → Vercel Production (live!)
-```
+| Pipeline | Trigger |
+|----------|---------|
+| Jenkins | Manual / Webhook |
+| GitHub Actions | Push to `main`, PR to `main` |
 
-Perfect for:
-- Learning DevOps and CI/CD concepts
-- Automated Vercel deployments
-- Preview deployments for testing
-- Ensuring code quality
-- Professional deployment workflow
+---
 
 ## 📁 Project Structure
 
 ```
-todo/
+todo-devops/
 ├── src/
-│   ├── components/          # React components
+│   ├── components/
 │   │   ├── AddTodo.jsx
 │   │   ├── TodoItem.jsx
 │   │   ├── TodoList.jsx
@@ -119,140 +116,83 @@ todo/
 │   │   ├── PomodoroTimer.jsx
 │   │   ├── FocusMode.jsx
 │   │   └── ProductivityAnalytics.jsx
-│   ├── App.jsx              # Main app component
-│   ├── App.css              # App styles
-│   ├── main.jsx             # Entry point
-│   └── index.css            # Global styles
-├── public/                  # Static assets
-├── Jenkinsfile             # CI/CD pipeline
-├── docker-compose.jenkins.yml  # Jenkins setup
-├── setup-jenkins.sh        # Automated Jenkins setup
-├── JENKINS_GUIDE.md        # Jenkins learning guide
-├── JENKINS_QUICKSTART.md   # Quick start guide
-├── package.json            # Dependencies
-└── vite.config.js          # Vite configuration
+│   ├── App.jsx
+│   ├── App.css
+│   ├── main.jsx
+│   └── index.css
+├── .github/
+│   └── workflows/
+│       └── github-actions-ci.yml    # GitHub Actions pipeline
+├── Jenkinsfile                       # Jenkins pipeline
+├── docker-compose.jenkins.yml        # Jenkins Docker setup
+├── setup-jenkins.sh                  # Jenkins setup script
+├── vercel.json                       # Vercel configuration
+├── PIPELINE_WORKFLOW.md              # Pipeline documentation
+├── package.json
+└── vite.config.js
 ```
 
-## 🎨 Component Overview
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [PIPELINE_WORKFLOW.md](./PIPELINE_WORKFLOW.md) | CI/CD pipeline visualization |
+| [JENKINS_VS_GITHUB_ACTIONS.md](./JENKINS_VS_GITHUB_ACTIONS.md) | Tool comparison |
+| [Jenkinsfile](./Jenkinsfile) | Jenkins pipeline code |
+| [github-actions-ci.yml](./.github/workflows/github-actions-ci.yml) | GitHub Actions workflow |
+
+---
+
+## 🎨 Components
 
 ### Core Components
 - **AddTodo** - Form to add new tasks
-- **TodoItem** - Individual task display and editing
+- **TodoItem** - Individual task display
 - **TodoList** - List of all todos
 - **FilterBar** - Search and filter controls
-- **StatsPanel** - Quick statistics overview
+- **StatsPanel** - Quick statistics
 
 ### Productivity Components
 - **PomodoroTimer** - Time management timer
 - **FocusMode** - Distraction-free interface
-- **ProductivityAnalytics** - Detailed productivity insights
-
-## 🌐 Deployment Options
-
-This app can be deployed to:
-
-- **Netlify** (recommended for beginners)
-- **Vercel** 
-- **GitHub Pages**
-- **AWS S3 + CloudFront**
-- **Any static hosting service**
-
-See [JENKINS_GUIDE.md](./JENKINS_GUIDE.md) for detailed deployment instructions.
-
-## 🔧 Configuration
-
-### Building for Production
-
-```bash
-npm run build
-```
-
-This creates an optimized build in the `dist/` folder, ready for deployment.
-
-### Vite Configuration
-
-The project uses standard Vite configuration. To customize:
-- Edit `vite.config.js`
-- See [Vite documentation](https://vite.dev/config/)
-
-### ESLint Configuration
-
-Code quality rules are defined in `eslint.config.js`. Customize as needed.
-
-## 📝 Environment Variables
-
-Currently, no environment variables are required. For production deployments:
-
-1. Create `.env.production` file
-2. Add any API keys or configuration
-3. Access via `import.meta.env.VITE_*`
-
-## 🐛 Troubleshooting
-
-### Development Server Issues
-```bash
-# Clear cache and restart
-rm -rf node_modules
-npm install
-npm run dev
-```
-
-### Build Errors
-```bash
-# Check for linting errors
-npm run lint
-
-# Fix auto-fixable issues
-npm run lint -- --fix
-```
-
-### Jenkins Issues
-See [JENKINS_GUIDE.md](./JENKINS_GUIDE.md) for common Jenkins problems and solutions.
-
-## 📚 Learning Resources
-
-### React + Vite
-- [React Documentation](https://react.dev/)
-- [Vite Documentation](https://vite.dev/)
-
-### DevOps & Jenkins
-- [JENKINS_QUICKSTART.md](./JENKINS_QUICKSTART.md) - Start here!
-- [JENKINS_GUIDE.md](./JENKINS_GUIDE.md) - Complete guide
-- [Jenkins Official Docs](https://www.jenkins.io/doc/)
-
-## 🤝 Contributing
-
-This is a learning project, but contributions are welcome!
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 🎓 Learning Goals
-
-This project is perfect for learning:
-- ✅ React state management with hooks
-- ✅ Component composition
-- ✅ Local storage integration
-- ✅ Modern CSS styling
-- ✅ **CI/CD with Jenkins**
-- ✅ **DevOps practices**
-- ✅ **Automated deployments**
-
-## 🙏 Acknowledgments
-
-- Built with [Vite](https://vite.dev/)
-- UI inspired by modern productivity apps
-- Icons from [Lucide React](https://lucide.dev/)
+- **ProductivityAnalytics** - Productivity insights
 
 ---
 
-**Happy coding and learning DevOps! 🚀**
+## 🌐 Deployment
 
-For Jenkins setup, start here: [JENKINS_QUICKSTART.md](./JENKINS_QUICKSTART.md)
+**Platform:** Vercel
+
+The app is deployed automatically via Jenkins pipeline when code is pushed to `main` branch.
+
+---
+
+## 🎓 Project Purpose
+
+This project was built for **DevSecOps learning**, comparing:
+
+| Aspect | Jenkins | GitHub Actions |
+|--------|---------|----------------|
+| Hosting | Self-hosted | Cloud |
+| Setup | Complex | Simple |
+| Flexibility | High | Medium |
+| Maintenance | Required | None |
+
+---
+
+## 👥 Team
+
+- **HarshAvichal** - Jenkins Pipeline & Documentation
+- **satyajeetmane01** - GitHub Actions Pipeline
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+*Built with React + Vite | CI/CD with Jenkins & GitHub Actions*
