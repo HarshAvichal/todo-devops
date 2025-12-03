@@ -182,13 +182,6 @@ This project was built for **DevSecOps learning**, comparing:
 
 ---
 
-## 👥 Team
-
-- **HarshAvichal** - Jenkins Pipeline & Documentation
-- **satyajeetmane01** - GitHub Actions Pipeline
-
----
-
 ## 📄 License
 
 MIT License
