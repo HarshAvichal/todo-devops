@@ -16,7 +16,7 @@ import './TodoItem.css';
 const TodoItem = ({ 
   todo, 
   onToggle, 
-  onEdit, // eslint-disable-line no-unused-vars
+  onEdit,
   onDelete, 
   onUpdate,
   onFocus

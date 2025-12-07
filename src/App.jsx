@@ -8,7 +8,6 @@ import FocusMode from './components/FocusMode';
 import ProductivityAnalytics from './components/ProductivityAnalytics';
 import './App.css';
 
-// Action types
 const ACTIONS = {
   ADD_TODO: 'ADD_TODO',
   TOGGLE_TODO: 'TOGGLE_TODO',
@@ -17,7 +16,6 @@ const ACTIONS = {
   SET_TODOS: 'SET_TODOS'
 };
 
-// Reducer function
 const todoReducer = (state, action) => {
   switch (action.type) {
     case ACTIONS.ADD_TODO:
@@ -55,12 +53,10 @@ function App() {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
   
-  // Productivity features state
   const [showPomodoro, setShowPomodoro] = useState(false);
   const [showFocusMode, setShowFocusMode] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [currentFocusTodo, setCurrentFocusTodo] = useState(null);
-  // eslint-disable-next-line no-unused-vars
   const [pomodoroData, setPomodoroData] = useState({
     timeLeft: 25 * 60,
     isRunning: false,
@@ -68,7 +64,6 @@ function App() {
     isMuted: false
   });
 
-  // Load todos from localStorage on mount
   useEffect(() => {
     const savedTodos = localStorage.getItem('todos');
     if (savedTodos) {
@@ -81,18 +76,15 @@ function App() {
     }
   }, []);
 
-  // Save todos to localStorage whenever todos change
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos));
   }, [todos]);
 
-  // Get unique categories from todos
   const categories = [...new Set(todos
     .map(todo => todo.category)
     .filter(Boolean)
   )];
 
-  // Filter todos based on search and filter criteria
   const filteredTodos = todos.filter(todo => {
     const matchesSearch = todo.text.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = 
@@ -105,14 +97,11 @@ function App() {
     return matchesSearch && matchesStatus && matchesCategory && matchesPriority;
   });
 
-  // Sort todos by priority and due date
   const sortedTodos = [...filteredTodos].sort((a, b) => {
-    // First sort by completion status (incomplete first)
     if (a.completed !== b.completed) {
       return a.completed ? 1 : -1;
     }
 
-    // Then by priority (high first)
     const priorityOrder = { high: 3, medium: 2, low: 1 };
     const aPriority = priorityOrder[a.priority] || 0;
     const bPriority = priorityOrder[b.priority] || 0;
@@ -120,14 +109,12 @@ function App() {
       return bPriority - aPriority;
     }
 
-    // Then by due date (earliest first)
     if (a.dueDate && b.dueDate) {
       return new Date(a.dueDate) - new Date(b.dueDate);
     }
     if (a.dueDate) return -1;
     if (b.dueDate) return 1;
 
-    // Finally by creation date (newest first)
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
@@ -154,7 +141,6 @@ function App() {
     setPriorityFilter('');
   };
 
-  // Productivity feature handlers
   const handlePomodoroToggle = () => {
     setShowPomodoro(!showPomodoro);
   };
@@ -168,7 +154,6 @@ function App() {
   };
 
   const handleSessionComplete = (sessionType) => {
-    // Save session data
     const sessionData = {
       type: sessionType,
       timestamp: new Date().toISOString(),
@@ -236,14 +221,13 @@ function App() {
         <TodoList
           todos={sortedTodos}
           onToggle={handleToggleTodo}
-          onEdit={() => {}} // Handled within TodoItem
+          onEdit={() => {}}
           onDelete={handleDeleteTodo}
           onUpdate={handleUpdateTodo}
           onFocus={handleTodoFocus}
         />
       </main>
 
-      {/* Productivity Features */}
       <PomodoroTimer
         isVisible={showPomodoro}
         onToggle={handlePomodoroToggle}

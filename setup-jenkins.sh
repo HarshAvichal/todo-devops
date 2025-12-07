@@ -1,32 +1,12 @@
 #!/bin/bash
 
-# =============================================================================
-# Jenkins Local Setup Script
-# =============================================================================
-# This script helps you set up Jenkins locally using Docker
-# Perfect for learning and testing CI/CD pipelines!
-#
-# Prerequisites:
-#   - Docker installed and running
-#   - Docker Compose installed
-#
-# Usage:
-#   chmod +x setup-jenkins.sh
-#   ./setup-jenkins.sh
-# =============================================================================
+set -e
 
-set -e  # Exit on any error
-
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# =============================================================================
-# Helper Functions
-# =============================================================================
+NC='\033[0m'
 
 print_header() {
     echo ""
@@ -48,14 +28,9 @@ print_info() {
     echo -e "${YELLOW}ℹ $1${NC}"
 }
 
-# =============================================================================
-# Check Prerequisites
-# =============================================================================
-
 check_prerequisites() {
     print_header "Checking Prerequisites"
     
-    # Check if Docker is installed
     if ! command -v docker &> /dev/null; then
         print_error "Docker is not installed!"
         echo "Please install Docker from: https://www.docker.com/get-started"
@@ -63,7 +38,6 @@ check_prerequisites() {
     fi
     print_success "Docker is installed"
     
-    # Check if Docker is running
     if ! docker info &> /dev/null; then
         print_error "Docker is not running!"
         echo "Please start Docker Desktop and try again"
@@ -71,7 +45,6 @@ check_prerequisites() {
     fi
     print_success "Docker is running"
     
-    # Check if Docker Compose is installed
     if ! command -v docker-compose &> /dev/null; then
         print_error "Docker Compose is not installed!"
         echo "Please install Docker Compose from: https://docs.docker.com/compose/install/"
@@ -81,10 +54,6 @@ check_prerequisites() {
     
     echo ""
 }
-
-# =============================================================================
-# Start Jenkins
-# =============================================================================
 
 start_jenkins() {
     print_header "Starting Jenkins"
@@ -99,18 +68,13 @@ start_jenkins() {
     echo ""
 }
 
-# =============================================================================
-# Wait for Jenkins to be Ready
-# =============================================================================
-
 wait_for_jenkins() {
     print_header "Waiting for Jenkins to Start"
     
     print_info "Jenkins is initializing (this may take 1-2 minutes)..."
     
-    # Wait for Jenkins to be ready
     COUNTER=0
-    MAX_ATTEMPTS=60  # 60 attempts = 2 minutes
+    MAX_ATTEMPTS=60
     
     while [ $COUNTER -lt $MAX_ATTEMPTS ]; do
         if docker exec todo-app-jenkins curl -s http://localhost:8080/login > /dev/null 2>&1; then
@@ -129,15 +93,11 @@ wait_for_jenkins() {
     exit 1
 }
 
-# =============================================================================
-# Get Initial Admin Password
-# =============================================================================
-
 get_admin_password() {
     print_header "Jenkins Initial Setup"
     
     print_info "Getting initial admin password..."
-    sleep 5  # Wait a bit for the password file to be created
+    sleep 5
     
     PASSWORD=$(docker exec todo-app-jenkins cat /var/jenkins_home/secrets/initialAdminPassword 2>/dev/null || echo "")
     
@@ -158,10 +118,6 @@ get_admin_password() {
         echo ""
     fi
 }
-
-# =============================================================================
-# Display Next Steps
-# =============================================================================
 
 show_next_steps() {
     print_header "Next Steps"
@@ -207,10 +163,6 @@ show_next_steps() {
     echo ""
 }
 
-# =============================================================================
-# Main Execution
-# =============================================================================
-
 main() {
     clear
     
@@ -228,6 +180,4 @@ main() {
     show_next_steps
 }
 
-# Run the script
 main
-

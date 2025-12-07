@@ -25,7 +25,7 @@ const ProductivityAnalytics = ({ isVisible, onClose, todos, pomodoroData }) => {
     breakTime: 0
   });
 
-  const [timeRange, setTimeRange] = useState('week'); // 'day', 'week', 'month'
+  const [timeRange, setTimeRange] = useState('week');
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
@@ -39,7 +39,6 @@ const ProductivityAnalytics = ({ isVisible, onClose, todos, pomodoroData }) => {
     const today = new Date();
     const startDate = getStartDate(timeRange);
     
-    // Calculate focus time and sessions
     const sessions = getSessionsInRange(startDate, today);
     const totalFocusTime = sessions.reduce((total, session) => {
       return total + (session.type === 'work' ? 25 : 0);
@@ -48,21 +47,17 @@ const ProductivityAnalytics = ({ isVisible, onClose, todos, pomodoroData }) => {
     const sessionsCompleted = sessions.filter(s => s.type === 'work').length;
     const averageSessionLength = sessionsCompleted > 0 ? totalFocusTime / sessionsCompleted : 0;
     
-    // Calculate most productive hour
     const hourlyData = getHourlyProductivity(sessions);
     const mostProductiveHour = Object.keys(hourlyData).reduce((a, b) => 
       hourlyData[a] > hourlyData[b] ? a : b, 0
     );
     
-    // Calculate tasks completed
     const tasksCompleted = todos.filter(todo => 
       todo.completed && new Date(todo.completedAt || todo.createdAt) >= startDate
     ).length;
     
-    // Calculate focus efficiency (tasks completed per focus session)
     const focusEfficiency = sessionsCompleted > 0 ? (tasksCompleted / sessionsCompleted) * 100 : 0;
     
-    // Calculate break time
     const breakTime = sessions.reduce((total, session) => {
       return total + (session.type === 'break' ? 5 : 0);
     }, 0);
@@ -116,8 +111,6 @@ const ProductivityAnalytics = ({ isVisible, onClose, todos, pomodoroData }) => {
   };
 
   const getSessionsInRange = (startDate, endDate) => {
-    // This would typically come from localStorage or a database
-    // For now, we'll simulate some data
     return JSON.parse(localStorage.getItem('pomodoroSessions') || '[]')
       .filter(session => {
         const sessionDate = new Date(session.timestamp);
@@ -139,7 +132,6 @@ const ProductivityAnalytics = ({ isVisible, onClose, todos, pomodoroData }) => {
   };
 
   const calculateStreak = () => {
-    // Calculate consecutive days with at least one focus session
     let streak = 0;
     const today = new Date();
     

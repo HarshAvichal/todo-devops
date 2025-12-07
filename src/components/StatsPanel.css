@@ -1,4 +1,3 @@
-/* StatsPanel.css */
 .stats-panel {
   padding: 24px;
   background: linear-gradient(135deg, 
@@ -288,7 +287,6 @@
   letter-spacing: 0.5px;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .stats-panel {
     padding: 15px;

@@ -21,20 +21,18 @@ const PomodoroTimer = ({
   currentTodo,
   onSessionComplete 
 }) => {
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
-  const [sessionType, setSessionType] = useState('work'); // 'work', 'shortBreak', 'longBreak'
+  const [sessionType, setSessionType] = useState('work');
   const [sessionCount, setSessionCount] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  // eslint-disable-next-line no-unused-vars
   const [sessionGoal, setSessionGoal] = useState(4);
   const [completedToday, setCompletedToday] = useState(0);
   
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
 
-  // Load saved data from localStorage
   useEffect(() => {
     const savedData = localStorage.getItem('pomodoroData');
     if (savedData) {
@@ -45,7 +43,6 @@ const PomodoroTimer = ({
     }
   }, []);
 
-  // Save data to localStorage
   useEffect(() => {
     const data = {
       sessionCount,
@@ -55,7 +52,6 @@ const PomodoroTimer = ({
     localStorage.setItem('pomodoroData', JSON.stringify(data));
   }, [sessionCount, completedToday, isMuted]);
 
-  // Timer logic
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
@@ -68,7 +64,6 @@ const PomodoroTimer = ({
     return () => clearInterval(intervalRef.current);
   }, [isRunning, timeLeft]);
 
-  // Handle timer completion
   useEffect(() => {
     if (timeLeft === 0) {
       handleSessionComplete();
@@ -78,12 +73,10 @@ const PomodoroTimer = ({
   const handleSessionComplete = () => {
     setIsRunning(false);
     
-    // Play notification sound
     if (!isMuted && audioRef.current) {
       audioRef.current.play().catch(e => console.log('Audio play failed:', e));
     }
 
-    // Show browser notification
     if (Notification.permission === 'granted') {
       const message = sessionType === 'work' 
         ? 'Work session complete! Time for a break.' 
@@ -96,17 +89,15 @@ const PomodoroTimer = ({
       setCompletedToday(prev => prev + 1);
       onSessionComplete?.(sessionType);
       
-      // Start break
       if (sessionCount + 1 >= 4) {
         setSessionType('longBreak');
-        setTimeLeft(15 * 60); // 15 minute long break
+        setTimeLeft(15 * 60);
         setSessionCount(0);
       } else {
         setSessionType('shortBreak');
-        setTimeLeft(5 * 60); // 5 minute short break
+        setTimeLeft(5 * 60);
       }
     } else {
-      // Break is over, start work session
       setSessionType('work');
       setTimeLeft(25 * 60);
     }
@@ -139,7 +130,6 @@ const PomodoroTimer = ({
     setIsMuted(!isMuted);
   };
 
-  // eslint-disable-next-line no-unused-vars
   const requestNotificationPermission = async () => {
     if (Notification.permission === 'default') {
       await Notification.requestPermission();
